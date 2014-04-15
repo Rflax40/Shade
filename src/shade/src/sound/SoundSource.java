@@ -86,6 +86,15 @@ public class SoundSource implements SoundObject, Resource {
 		return this;
 	}
 
+    public SoundSource setLooping(boolean loop) {
+        AL10.alSourcei(sourceID, AL10.AL_LOOPING, loop?AL10.AL_TRUE:AL10.AL_FALSE);
+        return this;
+    }
+
+    public boolean isLooping() {
+        return AL10.alGetSourcei(sourceID, AL10.AL_LOOPING) == AL10.AL_TRUE;
+    }
+
 	public SoundSource setMaximumRange(float mr) {
 		maximumRange = mr;
 		AL10.alSourcef(sourceID, AL10.AL_MAX_DISTANCE, maximumRange);
