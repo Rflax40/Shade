@@ -8,7 +8,9 @@ public class SortedList<E extends Comparable<E>> extends ArrayList<E> implements
         E e = get(index);
         remove(index);
         return e;
-    }    public boolean add(E n) {
+    }
+
+    public boolean add(E n) {
         int i = insertionIndex(n);
         super.add(i, n);
         return get(i).equals(n);
@@ -18,8 +20,14 @@ public class SortedList<E extends Comparable<E>> extends ArrayList<E> implements
         return null;
     }
 
-    public E first() {
-        return get(0);
+    public SortedSet<E> subSet(E fromElement, E toElement) {
+        int start = indexOf(fromElement);
+        int end = indexOf(toElement);
+        SortedList<E> s = new SortedList<E>();
+        for (int i = start; i < end; i++) {
+            s.add(get(i));
+        }
+        return s;
     }
 
     public SortedSet<E> headSet(E toElement) {
@@ -32,6 +40,26 @@ public class SortedList<E extends Comparable<E>> extends ArrayList<E> implements
             s.add(get(i));
         }
         return s;
+    }
+
+    public SortedSet<E> tailSet(E fromElement) {
+        int start = indexOf(fromElement);
+        while (start + 1 < size() && comparator().compare(get(start), get(start + 1)) > 0) {
+            start++;
+        }
+        SortedList<E> s = new SortedList<E>();
+        for (int i = start; i < size(); i++) {
+            s.add(get(i));
+        }
+        return s;
+    }
+
+    public E first() {
+        return get(0);
+    }
+
+    public E last() {
+        return get(size() - 1);
     }
 
     private int insertionIndex(E n) {
@@ -55,33 +83,5 @@ public class SortedList<E extends Comparable<E>> extends ArrayList<E> implements
             }
         }
         return low;
-    }
-
-    public E last() {
-        return get(size() - 1);
-    }
-
-
-
-    public SortedSet<E> subSet(E fromElement, E toElement) {
-        int start = indexOf(fromElement);
-        int end = indexOf(toElement);
-        SortedList<E> s = new SortedList<E>();
-        for (int i = start; i < end; i++) {
-            s.add(get(i));
-        }
-        return s;
-    }
-
-    public SortedSet<E> tailSet(E fromElement) {
-        int start = indexOf(fromElement);
-        while (start + 1 < size() && comparator().compare(get(start), get(start + 1)) > 0) {
-            start++;
-        }
-        SortedList<E> s = new SortedList<E>();
-        for (int i = start; i < size(); i++) {
-            s.add(get(i));
-        }
-        return s;
     }
 }

@@ -1,55 +1,18 @@
 package shade.src.sound;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.LWJGLException;
 import org.lwjgl.util.vector.Vector3f;
 
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
-import static org.lwjgl.openal.AL10.*;
+import static org.lwjgl.openal.AL10.AL_INVALID_ENUM;
+import static org.lwjgl.openal.AL10.AL_INVALID_NAME;
+import static org.lwjgl.openal.AL10.AL_INVALID_OPERATION;
+import static org.lwjgl.openal.AL10.AL_INVALID_VALUE;
+import static org.lwjgl.openal.AL10.AL_NO_ERROR;
+import static org.lwjgl.openal.AL10.AL_OUT_OF_MEMORY;
 
 public class AL {
-
-    public static void create() throws LWJGLException {
-        org.lwjgl.openal.AL.create();
-    }
-
-    public static void destroy() {
-        org.lwjgl.openal.AL.destroy();
-    }
-
-    public static void pause(SoundSource source) {
-        alSourcePause(source.sourceID);
-    }
-
-    public static void play(SoundSource source, SoundBuffer... buffers) {
-        addToSourceQueue(source, buffers);
-        play(source);
-    }
-
-    public static void play(SoundSource source) {
-        alSourcePlay(source.sourceID);
-    }
-
-    public static void addToSourceQueue(SoundSource source, SoundBuffer... buffers) {
-        for (SoundBuffer buffer : buffers) {
-            alSourceQueueBuffers(source.sourceID, buffer.bufferID);
-        }
-    }
-
-    public static void removeFromSourceQueue(SoundSource source, SoundBuffer... buffers) {
-        IntBuffer buffs = BufferUtils.createIntBuffer(buffers.length);
-        for (SoundBuffer buffer : buffers) {
-            buffs.put(buffer.bufferID);
-        }
-        buffs.flip();
-        alSourceUnqueueBuffers(source.sourceID, buffs);
-    }
-
-    public static void stop(SoundSource source) {
-        alSourceStop(source.sourceID);
-    }
 
     public static FloatBuffer toBuffer(Vector3f... vectors) {
         FloatBuffer buff = BufferUtils.createFloatBuffer(3 * vectors.length);

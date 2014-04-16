@@ -1,42 +1,41 @@
 package shade.src.sound;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
-import org.lwjgl.util.vector.Vector3f;
-import shade.src.resource.Unloadable;
 
-public class SoundSource implements SoundObject, Unloadable {
+import java.nio.IntBuffer;
+
+public class SoundSource extends SoundObject {
 
     public final int sourceID;
-
-    private Vector3f velocity;
-    private Vector3f position;
-    private float minimumRange;
-    private float maximumRange;
-    private float pitch;
-    private float gain;
 
     public SoundSource() {
         sourceID = AL10.alGenSources();
         AL10.alSourcef(sourceID, AL10.AL_MIN_GAIN, 0F);
         int error = AL10.alGetError();
-        assert error == AL10.AL_NO_ERROR : String.format("OpenAL Error while loading source with id %d(%d)", sourceID, error);
+        if (error != AL10.AL_NO_ERROR) {
+            new Exception(String.format("OpenAL Error while loading source with id %d(%d)", sourceID, error)).printStackTrace();
+        }
         setVelocity(0, 0, 0);
         setPosition(0, 0, 0);
         setPitch(1);
         setGain(1);
     }
 
-    public SoundSource setPosition(float x, float y, float z) {
-        return setPosition(new Vector3f(x, y, z));
-    }
-
-    public SoundSource setVelocity(float x, float y, float z) {
-        return setVelocity(new Vector3f(x, y, z));
-    }
-
     public void addToQueue(SoundBuffer... buffers) {
-        AL.addToSourceQueue(this, buffers);
+        for (SoundBuffer buffer : buffers) {
+            AL10.alSourceQueueBuffers(sourceID, buffer.bufferID);
+        }
+    }
+
+    public void removeFromQueue(SoundBuffer... buffers) {
+        IntBuffer buffs = BufferUtils.createIntBuffer(buffers.length);
+        for (SoundBuffer buffer : buffers) {
+            buffs.put(buffer.bufferID);
+        }
+        buffs.flip();
+        AL10.alSourceUnqueueBuffers(sourceID, buffs);
     }
 
     public void clearQueue() {
@@ -44,80 +43,60 @@ public class SoundSource implements SoundObject, Unloadable {
     }
 
     public float getGain() {
-        return gain;
+        return AL10.alGetSourcef(sourceID, AL10.AL_GAIN);
     }
 
-    public SoundSource setGain(float g) {
-        gain = g;
+    public SoundSource setGain(float gain) {
         // AL10.alSourcef(sourceID, AL10.AL_MAX_GAIN, gain);
         AL10.alSourcef(sourceID, AL10.AL_GAIN, gain);
         return this;
     }
 
     public float getMaximumRange() {
-        return maximumRange;
+        return AL10.alGetSourcef(sourceID, AL10.AL_MAX_DISTANCE);
     }
 
-    public SoundSource setMaximumRange(float mr) {
-        maximumRange = mr;
+    public SoundSource setMaximumRange(float maximumRange) {
         AL10.alSourcef(sourceID, AL10.AL_MAX_DISTANCE, maximumRange);
         return this;
     }
 
     public float getMinimumRange() {
-        return minimumRange;
+        return AL10.alGetSourcef(sourceID, AL10.AL_REFERENCE_DISTANCE);
     }
 
-    public SoundSource setMinimumRange(float mr) {
-        minimumRange = mr;
+    public SoundSource setMinimumRange(float minimumRange) {
         AL10.alSourcef(sourceID, AL10.AL_REFERENCE_DISTANCE, minimumRange);
         return this;
     }
 
     public float getPitch() {
-        return pitch;
+        return AL10.alGetSourcef(sourceID, AL10.AL_PITCH);
     }
 
-    public SoundSource setPitch(float p) {
-        pitch = p;
+    public SoundSource setPitch(float pitch) {
         AL10.alSourcef(sourceID, AL10.AL_PITCH, pitch);
         return this;
     }
 
-    public long getPlayTime() {
-        return (long) (AL10.alGetSourcef(sourceID, AL11.AL_SEC_OFFSET) * 1000);
+    public float getPlayTime() {
+        return AL10.alGetSourcef(sourceID, AL11.AL_SEC_OFFSET);
     }
 
-    public Vector3f getPosition() {
-        return position;
+    public void play() {
+        AL10.alSourcePlay(sourceID);
     }
 
-    public Vector3f getVelocity() {
-        return velocity;
+    public void pause() {
+        AL10.alSourcePause(sourceID);
     }
 
-    public SoundSource setVelocity(Vector3f vector) {
-        velocity = vector;
-        AL10.alSource(sourceID, AL10.AL_VELOCITY, AL.toBuffer(velocity));
-        return this;
+    public void stop() {
+        AL10.alSourceStop(sourceID);
     }
 
-    public SoundSource setPosition(Vector3f vector) {
-        position = vector;
-        AL10.alSource(sourceID, AL10.AL_POSITION, AL.toBuffer(position));
-        return this;
-    }
-
-    public int getSampleOffset() {
-        return AL10.alGetSourcei(sourceID, AL11.AL_SAMPLE_OFFSET);
-    }
-
-    public boolean isPlaying() {
-        return AL10.alGetSourcei(sourceID, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;
-    }
-
-    public void removeFromQueue(SoundBuffer... buffers) {
-        AL.removeFromSourceQueue(this, buffers);
+    public int getState() {
+        return AL10.alGetSourcei(sourceID, AL10.AL_SOURCE_STATE);
     }
 
     public boolean isLooping() {
@@ -129,7 +108,7 @@ public class SoundSource implements SoundObject, Unloadable {
         return this;
     }
 
-    public void unload() {
+    public void delete() {
         AL10.alDeleteSources(sourceID);
     }
 }

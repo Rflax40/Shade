@@ -1,31 +1,17 @@
 package shade.src.resource;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 
 public class Resource {
 
     private static final ArrayList<Resource> resourcePool = new ArrayList<Resource>();
-
-    public static Resource getResource(String location) {
-        Resource newRes = new Resource(location);
-        for (Resource r : resourcePool) {
-            if (r.equals(newRes)) {
-                return r;
-            }
-        }
-        if (!newRes.isValid()) {
-            return null;
-        }
-        resourcePool.add(newRes);
-        return newRes;
-    }
-
     public final URL handle;
     private boolean valid;
 
-    protected Resource(String location) {
+    private Resource(String location) {
         handle = Thread.currentThread().getContextClassLoader().getResource(location);
         if (handle != null) {
             valid = true;
@@ -34,6 +20,7 @@ public class Resource {
 
     public void invalidate() {
         valid = false;
+        resourcePool.remove(this);
     }
 
     public boolean isValid() {
@@ -53,6 +40,10 @@ public class Resource {
         }
     }
 
+    public String toString() {
+        return handle.toString();
+    }
+
     public InputStream getAsStream() {
         try {
             return handle.openStream();
@@ -62,7 +53,26 @@ public class Resource {
         }
     }
 
-    public String fileName() {
-        return handle.getFile();
+    public OutputStream getAsOutput() {
+        try {
+            return handle.openConnection().getOutputStream();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Resource getResource(String location) {
+        Resource newRes = new Resource(location);
+        for (Resource r : resourcePool) {
+            if (r.equals(newRes)) {
+                return r;
+            }
+        }
+        if (!newRes.isValid()) {
+            return null;
+        }
+        resourcePool.add(newRes);
+        return newRes;
     }
 }

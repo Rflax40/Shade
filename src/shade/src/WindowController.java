@@ -1,19 +1,18 @@
 package shade.src;
 
+import shade.src.resource.ResourceBased;
+
 public abstract class WindowController {
 
     public Window window;
-
     /**
      * In milliseconds
      */
     public int updateInterval;
-
     /**
      * -1 for no cap
      */
     public int fpsCap = -1;
-
     private volatile boolean running;
 
     public WindowController(String t) {
@@ -97,6 +96,7 @@ public abstract class WindowController {
     }
 
     public void shutdown() {
+        ResourceBased.unloadResources();
         window.close();
     }
 

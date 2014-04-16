@@ -7,7 +7,6 @@ public class Window {
 
     public final String windowTitle;
     private WindowController windowController;
-
     private boolean full = false;
 
     public Window(String wt) {

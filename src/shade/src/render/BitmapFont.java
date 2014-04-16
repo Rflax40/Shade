@@ -6,10 +6,11 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import shade.src.render.FontInfo.GlyphInfo;
 import shade.src.resource.Resource;
 
-import java.io.*;
+import java.io.InputStream;
 import java.util.HashMap;
 
 public class BitmapFont implements IFont {
+
     public static final String INFO = "info";
     public static final String INFO_FACE = "face";
     public static final String INFO_SIZE = "size";
@@ -35,13 +36,12 @@ public class BitmapFont implements IFont {
     public static final String CHAR_Y_OFFSET = "yoffset";
     public static final String CHAR_X_ADVANCE = "xadvance";
     public static final String CHAR_PAGE = "page";
-
     private FontInfo info;
     private Texture[] tex;
     private HashMap<Character, Integer> glyphIndexMap;
 
     public BitmapFont(String f) throws Exception {
-        this(f, f.substring(0, f.lastIndexOf(File.separator) + 1));
+        this(f, f.substring(0, f.lastIndexOf('/')));
     }
 
     public BitmapFont(String f, String d) throws Exception {
@@ -84,12 +84,8 @@ public class BitmapFont implements IFont {
                         tex = new Texture[pages];
                         break;
                     case PAGE:
-                        try {
-                            Texture t = GL.getTexture(dir + atts.getValue(PAGE_FILE));
-                            tex[Short.parseShort(atts.getValue(PAGE_ID))] = t;
-                        } catch (IOException e) {
-                            throw new SAXException(e);
-                        }
+                        Texture t = Texture.getTexture(dir + '/' + atts.getValue(PAGE_FILE));
+                        tex[Short.parseShort(atts.getValue(PAGE_ID))] = t;
                         break;
                     case CHARS:
                         glyphs = new GlyphInfo[Integer.parseInt(atts.getValue(CHARS_COUNT))];

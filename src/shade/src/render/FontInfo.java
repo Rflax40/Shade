@@ -31,6 +31,7 @@ public class FontInfo {
     }
 
     public static class GlyphInfo {
+
         public final char character;
         public final short xCoord;
         public final short yCoord;

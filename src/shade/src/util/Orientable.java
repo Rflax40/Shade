@@ -8,7 +8,6 @@ public abstract class Orientable {
     public static final int ORI_RIGHT = OrientationUtils.ORI_RIGHT;
     public static final int ORI_FORWARD = OrientationUtils.ORI_FORWARD;
     public static final int ORI_POSITION = OrientationUtils.ORI_POSITION;
-
     protected Quaternion orientation;
     protected Vector3f position;
     protected Vector3f up;
