@@ -8,8 +8,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="LWJGL" level="application" />
-    <orderEntry type="library" name="LWJGL" level="application" />
-    <orderEntry type="library" name="Shade" level="application" />
   </component>
 </module>
 
