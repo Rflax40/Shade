@@ -28,7 +28,7 @@ public class Resource {
     protected Resource(String location) {
         handle = Thread.currentThread().getContextClassLoader().getResource(location);
         if (handle != null) {
-            invalidate();
+            valid = true;
         }
     }
 
