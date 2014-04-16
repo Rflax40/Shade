@@ -7,18 +7,6 @@ import java.util.ArrayList;
 public class Resource {
 
     private static final ArrayList<Resource> resourcePool = new ArrayList<Resource>();
-    public final URL handle;
-    private boolean valid;
-    protected Resource(String location) {
-        handle = getClass().getResource(location);
-        if (handle != null) {
-            invalidate();
-        }
-    }
-
-    public void invalidate() {
-        valid = false;
-    }
 
     public static Resource getResource(String location) {
         Resource newRes = new Resource(location);
@@ -32,6 +20,20 @@ public class Resource {
         }
         resourcePool.add(newRes);
         return newRes;
+    }
+
+    public final URL handle;
+    private boolean valid;
+
+    protected Resource(String location) {
+        handle = Thread.currentThread().getContextClassLoader().getResource(location);
+        if (handle != null) {
+            invalidate();
+        }
+    }
+
+    public void invalidate() {
+        valid = false;
     }
 
     public boolean isValid() {

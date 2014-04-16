@@ -38,7 +38,7 @@ public class Texture implements Unloadable {
         GL11.glEnd();
         GL.unbindTexture();
         /*
-		 * GL11.glBegin(GL11.GL_LINE_LOOP); GL11.glVertex3d(x, y - h, z);
+         * GL11.glBegin(GL11.GL_LINE_LOOP); GL11.glVertex3d(x, y - h, z);
 		 * GL11.glVertex3d(x + w, y - h, z); GL11.glVertex3d(x + w, y, z);
 		 * GL11.glVertex3d(x, y, z); GL11.glEnd();
 		 */
