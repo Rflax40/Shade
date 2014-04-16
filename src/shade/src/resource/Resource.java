@@ -10,7 +10,7 @@ public class Resource {
     public final URL handle;
     private boolean valid;
     protected Resource(String location) {
-        handle = getClass().getResource(location);
+        handle = Thread.currentThread().getContextClassLoader().getResource(location);
         if (handle != null) {
             invalidate();
         }
