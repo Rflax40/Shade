@@ -10,8 +10,8 @@ public class GL {
 
     public static void color(int hex, float al) {
         float b = (hex & 0xFF) / 255f;
-        float g = (hex & 0xFF00 >> 8) / 255f;
-        float r = (hex & 0xFF0000 >> 16) / 255F;
+        float g = ((hex & 0xFF00) >> 8) / 255f;
+        float r = ((hex & 0xFF0000) >> 16) / 255F;
         GL11.glColor4f(r, g, b, al);
     }
 

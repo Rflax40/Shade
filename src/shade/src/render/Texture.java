@@ -72,10 +72,6 @@ public class Texture extends ResourceBased {
         GL11.glDeleteTextures(id);
     }
 
-    public static Texture getTexture(String location) {
-        return getTexture(Resource.getResource(location));
-    }
-
     public static Texture getTexture(Resource resource) {
         return (Texture) getResourceBased(resource, textureFactory);
     }
@@ -95,7 +91,7 @@ public class Texture extends ResourceBased {
         bindTexture(0);
     }
 
-    private static Texture loadTexture(Resource res) {
+    public static Texture loadTexture(Resource res) {
         try (InputStream in = res.getAsStream()) {
             BufferedImage image = ImageIO.read(in);
             boolean alpha = image.getColorModel().hasAlpha();
@@ -108,7 +104,7 @@ public class Texture extends ResourceBased {
         return null;
     }
 
-    private static ByteBuffer getImageData(BufferedImage image) {
+    public static ByteBuffer getImageData(BufferedImage image) {
         int[] pixels = new int[image.getWidth() * image.getHeight()];
         pixels = image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0, image.getWidth());
         boolean alpha = image.getColorModel().hasAlpha();
@@ -128,7 +124,7 @@ public class Texture extends ResourceBased {
         return buffer;
     }
 
-    private static int genTexture(int internalFormat, int w, int h, int format, ByteBuffer buffer) {
+    public static int genTexture(int internalFormat, int w, int h, int format, ByteBuffer buffer) {
         int id = GL11.glGenTextures();
         bindTexture(id);
         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, internalFormat, w, h, 0, format, GL11.GL_UNSIGNED_BYTE, buffer);

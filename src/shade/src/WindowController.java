@@ -1,5 +1,6 @@
 package shade.src;
 
+import shade.src.resource.Resource;
 import shade.src.resource.ResourceBased;
 
 public abstract class WindowController {
@@ -13,6 +14,7 @@ public abstract class WindowController {
      * -1 for no cap
      */
     public int fpsCap = -1;
+    public boolean renderAfterUpdate;
     private volatile boolean running;
 
     public WindowController(String t) {
@@ -39,12 +41,14 @@ public abstract class WindowController {
             long lr = System.currentTimeMillis();
             long lu = lr;
             while (isRunning()) {
+                boolean updated = false;
                 if (shouldUpdate(lu)) {
                     int d = (int) (System.currentTimeMillis() - lu);
                     lu = System.currentTimeMillis();
                     update(d);
+                    updated = true;
                 }
-                if (shouldRender(lr)) {
+                if ((updated && renderAfterUpdate) || shouldRender(lr)) {
                     int d = (int) (System.currentTimeMillis() - lr);
                     lr = System.currentTimeMillis();
                     render(d);
@@ -73,14 +77,10 @@ public abstract class WindowController {
     public abstract void render(int delta);
 
     public boolean shouldRender(long last) {
-        if (fpsCap == -1) {
+        if (fpsCap < 1)
             return true;
-        }
         double millis = 1000D / fpsCap;
-        if (System.currentTimeMillis() - last >= millis) {
-            return true;
-        }
-        return false;
+        return System.currentTimeMillis() - last >= millis;
     }
 
     public boolean shouldUpdate(long last) {
@@ -89,14 +89,12 @@ public abstract class WindowController {
         }
         long l = System.currentTimeMillis();
         int interval = (int) (l - last);
-        if (interval >= updateInterval) {
-            return true;
-        }
-        return false;
+        return interval >= updateInterval;
     }
 
     public void shutdown() {
         ResourceBased.unloadResources();
+        Resource.invalidateAll();
         window.close();
     }
 

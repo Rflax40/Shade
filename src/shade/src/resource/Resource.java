@@ -1,18 +1,17 @@
 package shade.src.resource;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 
 public class Resource {
 
-    private static final ArrayList<Resource> resourcePool = new ArrayList<Resource>();
+    private static final ArrayList<Resource> resourcePool = new ArrayList<>();
     public final URL handle;
     private boolean valid;
 
-    private Resource(String location) {
-        handle = Thread.currentThread().getContextClassLoader().getResource(location);
+    private Resource(URL location) {
+        handle = location;
         if (handle != null) {
             valid = true;
         }
@@ -53,7 +52,7 @@ public class Resource {
         }
     }
 
-    public OutputStream getAsOutput() {
+    public OutputStream getAsOutputStream() {
         try {
             return handle.openConnection().getOutputStream();
         } catch (Exception e) {
@@ -63,7 +62,26 @@ public class Resource {
     }
 
     public static Resource getResource(String location) {
-        Resource newRes = new Resource(location);
+        return getResource(new Resource(Thread.currentThread().getContextClassLoader().getResource(location)));
+    }
+
+    public static Resource getResource(File file) {
+        URL url;
+        try {
+            url = new URL("file:///" + file.getAbsolutePath());
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return getResource(new Resource(url));
+    }
+
+    public static void invalidateAll() {
+        while(resourcePool.size() > 0)
+            resourcePool.get(0).invalidate();
+    }
+
+    private static Resource getResource(Resource newRes) {
         for (Resource r : resourcePool) {
             if (r.equals(newRes)) {
                 return r;

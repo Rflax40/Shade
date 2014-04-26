@@ -84,7 +84,7 @@ public class BitmapFont implements IFont {
                         tex = new Texture[pages];
                         break;
                     case PAGE:
-                        Texture t = Texture.getTexture(dir + '/' + atts.getValue(PAGE_FILE));
+                        Texture t = Texture.getTexture(Resource.getResource(dir + '/' + atts.getValue(PAGE_FILE)));
                         tex[Short.parseShort(atts.getValue(PAGE_ID))] = t;
                         break;
                     case CHARS:

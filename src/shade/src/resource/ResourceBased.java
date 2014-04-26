@@ -13,9 +13,7 @@ public abstract class ResourceBased {
     }
 
     public void unload() {
-        System.out.println("Resource Removed: " + resource);
         resourceBasedPool.remove(this);
-        resource.invalidate();
     }
 
     public static void unloadResources() {
@@ -42,8 +40,7 @@ public abstract class ResourceBased {
                 }
             }
         }
-        ResourceBased newBased = factory.construct(resource);
-        return newBased;
+        return factory.construct(resource);
     }
 
     protected static interface Factory {
