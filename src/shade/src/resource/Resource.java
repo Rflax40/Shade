@@ -53,6 +53,13 @@ public class Resource {
     }
 
     public OutputStream getAsOutputStream() {
+        if (handle.getProtocol().equals("file"))
+            try {
+                return new FileOutputStream(handle.getPath().replaceAll("%20", " "));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         try {
             return handle.openConnection().getOutputStream();
         } catch (Exception e) {
@@ -68,7 +75,7 @@ public class Resource {
     public static Resource getResource(File file) {
         URL url;
         try {
-            url = new URL("file:///" + file.getAbsolutePath());
+            url = new URL("file:///" + file.getAbsolutePath().replaceAll(" ", "%20"));
         } catch(Exception e) {
             e.printStackTrace();
             return null;
